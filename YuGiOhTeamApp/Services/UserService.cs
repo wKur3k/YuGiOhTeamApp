@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,12 +21,14 @@ namespace YuGiOhTeamApp.Services
         private readonly AppDbContext _context;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly AuthenticationSettings _authenticationSetting;
+        private readonly IMapper _mapper;
 
-        public UserService(AppDbContext context, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSetting)
+        public UserService(AppDbContext context, IPasswordHasher<User> passwordHasher, AuthenticationSettings authenticationSetting, IMapper mapper)
         {
             _context = context;
             _passwordHasher = passwordHasher;
             _authenticationSetting = authenticationSetting;
+            _mapper = mapper;
         }
 
         public void RegisterUser(RegisterUserDto dto)
@@ -74,5 +78,33 @@ namespace YuGiOhTeamApp.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
         }
+        public PagedResult<UserDto> GetUsers(PageQuery query)
+        {
+            var baseQuery = _context
+                .Users
+                .Include(u => u.Team)
+                .Where(u => query.SearchPhrase == null ||
+                (u.Username.ToLower().Contains(query.SearchPhrase.ToLower()) ||
+                u.Team.Name.ToLower().Contains(query.SearchPhrase.ToLower())));
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelectors = new Dictionary<string, Expression<Func<User, object>>>
+                {
+                    { nameof(User.Username), r => r.Username },
+                    { nameof(User.Team.Name), r => r.Team.Name }
+                };
+                var selectedColumns = columnsSelectors[query.SortBy];
+                baseQuery = query.SortDirection == SortDirection.ASC ? baseQuery.OrderBy(selectedColumns) : baseQuery.OrderByDescending(selectedColumns);
+            }
+            var users = baseQuery
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize)
+                .ToList();
+            var totalItemsCount = baseQuery.Count();
+            var userDtos = _mapper.Map<List<UserDto>>(users);
+            var result = new PagedResult<UserDto>(userDtos, totalItemsCount, query.PageSize, query.PageNumber);
+            return result;
+        }
+
     }
 }

@@ -20,17 +20,26 @@ namespace YuGiOhTeamApp.Controllers
             _userService = userService;
         }
 
-        [HttpPost("register")]
+        [HttpPost]
+        [Route("register")]
         public ActionResult RegisterUser([FromBody] RegisterUserDto dto)
         {
             _userService.RegisterUser(dto);
             return Ok();
         }
-        [HttpPost("login")]
+
+        [HttpPost]
+        [Route("login")]
         public ActionResult Login([FromBody] LoginUserDto dto)
         {
-            string token = _userService.GenerateJwtToken(dto);
-            return Ok(token);
+            return Ok(_userService.GenerateJwtToken(dto));
         }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<UserDto>> GetUsers([FromQuery] PageQuery query)
+        {
+            return Ok(_userService.GetUsers(query));
+        }
+
     }
 }

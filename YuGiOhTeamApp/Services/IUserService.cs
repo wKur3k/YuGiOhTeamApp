@@ -6,5 +6,6 @@ namespace YuGiOhTeamApp.Services
     {
         void RegisterUser(RegisterUserDto dto);
         string GenerateJwtToken(LoginUserDto dto);
+        PagedResult<UserDto> GetUsers(PageQuery query);
     }
 }
