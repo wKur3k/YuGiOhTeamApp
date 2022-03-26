@@ -105,6 +105,18 @@ namespace YuGiOhTeamApp.Services
             var result = new PagedResult<UserDto>(userDtos, totalItemsCount, query.PageSize, query.PageNumber);
             return result;
         }
+        public UserDto GetUserById(Guid id)
+        {
+            var user = _context
+                .Users
+                .Include(u => u.Team)
+                .FirstOrDefault(u => u.Id == id);
+            if (user is null)
+            {
+                return null;
+            }
+            return _mapper.Map<UserDto>(user);
+        }
 
     }
 }
