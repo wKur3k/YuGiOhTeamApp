@@ -6,5 +6,6 @@ namespace YuGiOhTeamApp.Services
     {
         Guid? GetUserId { get; }
         ClaimsPrincipal User { get; }
+        bool IsLeader { get; }
     }
 }

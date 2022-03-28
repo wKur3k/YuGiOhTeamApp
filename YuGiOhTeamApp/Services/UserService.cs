@@ -33,12 +33,7 @@ namespace YuGiOhTeamApp.Services
 
         public void RegisterUser(RegisterUserDto dto)
         {
-            var newUser = new User()
-            {
-                Username = dto.Username,
-                RoleId = dto.RoleId
-            };
-
+            var newUser = _mapper.Map<User>(dto);
             newUser.PasswordHash = _passwordHasher.HashPassword(newUser, dto.Password);
             _context.Users.Add(newUser);
             _context.SaveChanges();
@@ -63,7 +58,7 @@ namespace YuGiOhTeamApp.Services
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Role, user.Role.Name)
             };
-            if(user.TeamId != null)
+            if (user.TeamId != null)
             {
                 claims.Add(new Claim("TeamId", user.TeamId.ToString()));
             }

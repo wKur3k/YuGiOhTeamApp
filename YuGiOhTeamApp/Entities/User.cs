@@ -15,6 +15,7 @@ namespace YuGiOhTeamApp.Entities
         public virtual Role Role { get; set; }
         public int? TeamId { get; set; }
         public virtual Team Team { get; set; }
+        public bool isLeader { get; set; }
 
     }
 }

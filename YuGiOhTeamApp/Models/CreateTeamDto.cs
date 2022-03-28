@@ -4,14 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace YuGiOhTeamApp.Entities
+namespace YuGiOhTeamApp.Models
 {
-    public class Team
+    public class CreateTeamDto
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public ICollection<User> Users { get; set; }
-        public Guid LeaderId { get; set; }
     }
 }

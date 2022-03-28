@@ -11,5 +11,7 @@ namespace YuGiOhTeamApp.Models
         public Guid Id { get; set; }
         public string Username { get; set; }
         public string TeamName { get; set; }
+        public bool IsLeader { get; set; }
+
     }
 }
