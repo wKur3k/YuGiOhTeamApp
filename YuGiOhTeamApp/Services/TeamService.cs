@@ -86,6 +86,11 @@ namespace YuGiOhTeamApp.Services
         }
         public string requestToJoin(string teamName)
         {
+            var user = _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId);
+            if(user.TeamId != null)
+            {
+                throw new BadHttpRequestException("You cannot be in team in order to send requests to join another team.");
+            }
             if (string.IsNullOrEmpty(teamName))
             {
                 throw new BadHttpRequestException("Team name can't be empty.");
@@ -96,7 +101,7 @@ namespace YuGiOhTeamApp.Services
             }
             var request = new UserRequests
             {
-                UserId = (Guid)_userContextService.GetUserId,
+                UserId = user.Id,
                 TeamId = _context.Teams.FirstOrDefault(t => t.Name == teamName).Id
             };
             _context.UserRequests.Add(request);

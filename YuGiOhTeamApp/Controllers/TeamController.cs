@@ -41,5 +41,11 @@ namespace YuGiOhTeamApp.Controllers
             _teamService.passLeader(username);
             return Ok();
         }
+        [HttpPost]
+        [Route("join")]
+        public ActionResult RequestToJoin([FromQuery] string teamName)
+        {
+            return Ok("Sent request to join team: " + _teamService.requestToJoin(teamName));
+        }
     }
 }
