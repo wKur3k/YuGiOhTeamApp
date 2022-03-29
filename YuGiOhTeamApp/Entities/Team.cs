@@ -13,5 +13,6 @@ namespace YuGiOhTeamApp.Entities
         public string Description { get; set; }
         public ICollection<User> Users { get; set; }
         public Guid LeaderId { get; set; }
+        public List<UserRequests> UserRequests { get; set; }
     }
 }

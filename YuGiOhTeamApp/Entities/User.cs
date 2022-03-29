@@ -16,6 +16,7 @@ namespace YuGiOhTeamApp.Entities
         public int? TeamId { get; set; }
         public virtual Team Team { get; set; }
         public bool isLeader { get; set; }
+        public List<UserRequests> UserRequests { get; set; }
 
     }
 }

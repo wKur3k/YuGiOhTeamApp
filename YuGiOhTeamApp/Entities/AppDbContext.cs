@@ -13,7 +13,7 @@ namespace YuGiOhTeamApp.Entities
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Team> Teams { get; set; }
-
+        public DbSet<UserRequests> UserRequests { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -24,6 +24,8 @@ namespace YuGiOhTeamApp.Entities
                 .Property(t => t.Name)
                 .IsRequired()
                 .HasMaxLength(50);
+            modelBuilder.Entity<UserRequests>()
+                .HasKey(ur => new { ur.UserId, ur.TeamId });
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
