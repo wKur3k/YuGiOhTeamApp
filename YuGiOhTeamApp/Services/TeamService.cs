@@ -76,7 +76,7 @@ namespace YuGiOhTeamApp.Services
                 throw new BadHttpRequestException("You are not team leader.");
             }
             user.isLeader = false;
-            var team = _context.Teams.Include(t => t.Users).FirstOrDefault(t => t.Id == teamId);
+            var team = _context.Teams.Include(t => t.Users).FirstOrDefault(t => t.Id == user.TeamId);
             if(team is null)
             {
                 throw new BadHttpRequestException("Cannot get team.");
