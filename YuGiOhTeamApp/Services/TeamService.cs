@@ -84,5 +84,24 @@ namespace YuGiOhTeamApp.Services
             _context.Teams.Remove(team);
             _context.SaveChanges();
         }
+        public string requestToJoin(string teamName)
+        {
+            if (string.IsNullOrEmpty(teamName))
+            {
+                throw new BadHttpRequestException("Team name can't be empty.");
+            }
+            if(_context.Teams.FirstOrDefault(t => t.Name == teamName) is null)
+            {
+                throw new BadHttpRequestException("Cannot find team with that name.");
+            }
+            var request = new UserRequests
+            {
+                UserId = (Guid)_userContextService.GetUserId,
+                TeamId = _context.Teams.FirstOrDefault(t => t.Name == teamName).Id
+            };
+            _context.UserRequests.Add(request);
+            _context.SaveChanges();
+            return teamName;
+        }
     }
 }

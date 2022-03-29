@@ -8,5 +8,6 @@ namespace YuGiOhTeamApp.Services
         void CreateTeam(CreateTeamDto dto);
         void passLeader(string username);
         void deleteTeam();
+        string requestToJoin(string teamName);
     }
 }
