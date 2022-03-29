@@ -41,12 +41,5 @@ namespace YuGiOhTeamApp.Controllers
             _teamService.passLeader(username);
             return Ok();
         }
-        [HttpDelete]
-        [Route("{teamId}")]
-        public ActionResult DeleteAdmin([FromRoute] int teamId)
-        {
-            _teamService.deleteAdmin(teamId);
-            return NoContent();
-        }
     }
 }

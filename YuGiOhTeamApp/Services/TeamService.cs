@@ -68,14 +68,19 @@ namespace YuGiOhTeamApp.Services
             user.Team.LeaderId = newLeader.Id;
             _context.SaveChanges();
         }
-        public void deleteAdmin(int teamId)
+        public void deleteTeam()
         {
+            var user = _context.Users.Include(u => u.Team).FirstOrDefault(u => u.Id == _userContextService.GetUserId);
+            if (!user.isLeader)
+            {
+                throw new BadHttpRequestException("You are not team leader.");
+            }
+            user.isLeader = false;
             var team = _context.Teams.Include(t => t.Users).FirstOrDefault(t => t.Id == teamId);
             if(team is null)
             {
-                throw new BadHttpRequestException("Wrong TeamId");
+                throw new BadHttpRequestException("Cannot get team.");
             }
-            _context.Users.FirstOrDefault(u => u.Id == team.LeaderId).isLeader = false;
             _context.Teams.Remove(team);
             _context.SaveChanges();
         }
