@@ -10,17 +10,19 @@ namespace YuGiOhTeamApp.Models
     {
         public List<T> Items { get; set; }
         public int TotalPages { get; set; }
-        public int ItemsFrom { get; set; }
-        public int ItemsTo { get; set; }
+        public int CurrentPage { get; set; }
+        public int? PreviousPage { get; set; }
+        public int? NextPage { get; set; }
         public int TotalItemsCount { get; set; }
 
         public PagedResult(List<T> items, int totalCount, int pageSize, int pageNumber)
         {
             Items = items;
             TotalItemsCount = totalCount;
-            ItemsFrom = pageSize * (pageNumber - 1) + 1;
-            ItemsTo = ItemsFrom + pageSize - 1;
+            CurrentPage = pageNumber;
             TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            PreviousPage = CurrentPage > 1 ? CurrentPage -1 : null;
+            NextPage = CurrentPage < TotalPages ? CurrentPage + 1 : null;
         }
     }
 }

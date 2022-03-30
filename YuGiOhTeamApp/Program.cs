@@ -42,7 +42,7 @@ builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<IValidator<RegisterUserDto>, RegisterUserDtoValidator>();
 builder.Services.AddScoped<IValidator<LoginUserDto>, LoginUserDtoValidator>();
-builder.Services.AddScoped<IValidator<PageQuery>, PageQueryValidator>();
+builder.Services.AddScoped<IValidator<PageQuery>, UserQueryValidator>();
 builder.Services.AddScoped<IValidator<CreateTeamDto>, CreateTeamValidator>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddHttpContextAccessor();
