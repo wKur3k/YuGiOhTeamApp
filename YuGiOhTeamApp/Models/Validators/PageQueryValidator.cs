@@ -8,12 +8,12 @@ using YuGiOhTeamApp.Entities;
 
 namespace YuGiOhTeamApp.Models.Validators
 {
-    public class UserQueryValidator : AbstractValidator<PageQuery>
+    public class PageQueryValidator : AbstractValidator<PageQuery>
     {
         private readonly int[] allowedPageSizes = new[] { 10, 20 };
         private readonly string[] allowedSortByColumnNames = { nameof(User.Username), nameof(User.Team.Name) };
 
-        public UserQueryValidator()
+        public PageQueryValidator()
         {
             RuleFor(r => r.PageNumber).GreaterThanOrEqualTo(1);
             RuleFor(r => r.PageSize).Custom((value, context) =>

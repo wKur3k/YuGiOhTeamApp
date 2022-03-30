@@ -7,9 +7,10 @@ namespace YuGiOhTeamApp.Services
     {
         bool ChangeDescription(string newDesc);
         void CreateTeam(CreateTeamDto dto);
-        void passLeader(string username);
-        void deleteTeam();
-        string requestToJoin(string teamName);
-        List<UserRequestDto> showRequests(PageQuery query);
+        void PassLeader(string username);
+        void DeleteTeam();
+        string RequestToJoin(string teamName);
+        PagedResult<UserRequestDto> ShowRequests(PageQuery query);
+        string HandleJoinRequest(bool answer, string username);
     }
 }

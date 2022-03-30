@@ -39,20 +39,26 @@ namespace YuGiOhTeamApp.Controllers
         [Route("{username}")]
         public ActionResult ChangeTeamLeader([FromRoute] string username)
         {
-            _teamService.passLeader(username);
+            _teamService.PassLeader(username);
             return Ok();
         }
         [HttpPost]
         [Route("join")]
         public ActionResult RequestToJoin([FromQuery] string teamName)
         {
-            return Ok("Sent request to join team: " + _teamService.requestToJoin(teamName));
+            return Ok("Sent request to join team: " + _teamService.RequestToJoin(teamName));
         }
         [HttpGet]
         [Route("requests")]
-        public ActionResult<IEnumerable<UserRequestDto>> ShowRequests([FromQuery] PageQuery query)
+        public ActionResult<PagedResult<UserRequestDto>> ShowRequests([FromQuery] PageQuery query)
         {
-            return Ok(_teamService.showRequests(query));
+            return Ok(_teamService.ShowRequests(query));
+        }
+        [HttpPut]
+        [Route("request/{username}")]
+        public ActionResult HandleJoinRequest([FromQuery] bool answer, [FromRoute] string username)
+        {
+            return Ok(_teamService.HandleJoinRequest(answer, username));
         }
     }
 }

@@ -47,7 +47,7 @@ namespace YuGiOhTeamApp.Services
             }
             return false;
         }
-        public void passLeader(string username)
+        public void PassLeader(string username)
         {
             var user = _context.Users.Include(u => u.Team).FirstOrDefault(u => u.Id == _userContextService.GetUserId);
             var newLeader = _context.Users.Include(u => u.Team).FirstOrDefault(u => u.Username == username);
@@ -68,7 +68,7 @@ namespace YuGiOhTeamApp.Services
             user.Team.LeaderId = newLeader.Id;
             _context.SaveChanges();
         }
-        public void deleteTeam()
+        public void DeleteTeam()
         {
             var user = _context.Users.Include(u => u.Team).FirstOrDefault(u => u.Id == _userContextService.GetUserId);
             if (!user.isLeader)
@@ -84,7 +84,7 @@ namespace YuGiOhTeamApp.Services
             _context.Teams.Remove(team);
             _context.SaveChanges();
         }
-        public string requestToJoin(string teamName)
+        public string RequestToJoin(string teamName)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId);
             if (user.TeamId != null)
@@ -108,19 +108,57 @@ namespace YuGiOhTeamApp.Services
             _context.SaveChanges();
             return teamName;
         }
-        public List<UserRequestDto> showRequests(PageQuery query)
+        public PagedResult<UserRequestDto> ShowRequests(PageQuery query)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId);
             if (!user.isLeader)
             {
                 throw new BadHttpRequestException("You are not team leader.");
             }
-            var users = _context.UserRequests
+            var baseQuery = _context
+                .UserRequests
                 .Include(u => u.User)
                 .Where(u => u.TeamId == user.TeamId)
+                .Where(u => query.SearchPhrase == null ||
+                u.User.Username.ToLower().Contains(query.SearchPhrase.ToLower()));
+            baseQuery = query.SortDirection == SortDirection.ASC ? baseQuery.OrderBy(r => r.User.Username) : baseQuery.OrderByDescending(r => r.User.Username);
+            var users = baseQuery
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize)
                 .ToList();
-            var result = _mapper.Map<List<UserRequestDto>>(users);
+            var totalItemsCount = baseQuery.Count();
+            var userDtos = _mapper.Map<List<UserRequestDto>>(users);
+            var result = new PagedResult<UserRequestDto>(userDtos, totalItemsCount, query.PageSize, query.PageNumber);
             return result;
+        }
+        public string HandleJoinRequest (bool answer, string username)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId);
+            var newUser = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (!user.isLeader)
+            {
+                throw new BadHttpRequestException("You are not team leader.");
+            }
+            if(newUser is null)
+            {
+                throw new BadHttpRequestException("Cannot find user with that username.");
+            }
+            if(_context.UserRequests.Where(u => u.TeamId == user.TeamId && u.UserId == newUser.Id) is null)
+            {
+                throw new BadHttpRequestException($"Cannot find {username} on request list to your team.");
+            }
+            if (answer)
+            {
+                _context.Teams.FirstOrDefault(t => t.Id == user.TeamId).Users.Add(newUser);
+                var items = _context.UserRequests.Where(u => u.UserId == newUser.Id);
+                _context.UserRequests.RemoveRange(items);
+                _context.SaveChanges();
+                return $"User: {username} joined your team.";
+            }
+            var item = _context.UserRequests.FirstOrDefault(u => u.TeamId == user.TeamId && u.UserId == newUser.Id);
+            _context.Remove(item);
+            _context.SaveChanges();
+            return $"User: {username} got rejected.";
         }
     }
 }
