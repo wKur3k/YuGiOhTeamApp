@@ -12,5 +12,6 @@ namespace YuGiOhTeamApp.Services
         string RequestToJoin(string teamName);
         PagedResult<UserRequestDto> ShowRequests(PageQuery query);
         string HandleJoinRequest(bool answer, string username);
+        string DeleteUserFromTeam(string username);
     }
 }

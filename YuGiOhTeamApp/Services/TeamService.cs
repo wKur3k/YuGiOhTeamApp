@@ -160,5 +160,21 @@ namespace YuGiOhTeamApp.Services
             _context.SaveChanges();
             return $"User: {username} got rejected.";
         }
+        public string DeleteUserFromTeam(string username)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId);
+            var removeUser = _context.Users.FirstOrDefault(u => u.Username == username);
+            if (!user.isLeader)
+            {
+                throw new BadHttpRequestException("You are not team leader.");
+            }
+            if (removeUser is null || removeUser.TeamId != user.TeamId)
+            {
+                throw new BadHttpRequestException("Cannot find user with that username.");
+            }
+            _context.Users.FirstOrDefault(u => u.Username == username).TeamId = null;
+            _context.SaveChanges();
+            return $"Removed {username} from team";
+        }
     }
 }

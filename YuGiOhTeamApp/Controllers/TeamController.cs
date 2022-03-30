@@ -60,5 +60,11 @@ namespace YuGiOhTeamApp.Controllers
         {
             return Ok(_teamService.HandleJoinRequest(answer, username));
         }
+        [HttpDelete]
+        [Route("{username}")]
+        public ActionResult DeleteUserFromTeam([FromRoute] string username)
+        {
+            return Ok(_teamService.DeleteUserFromTeam(username));
+        }
     }
 }
