@@ -170,7 +170,7 @@ namespace YuGiOhTeamApp.Services
             }
             if(username == user.Username)
             {
-                throw new BadHttpRequestException("Cannot remove yourself if you are team leader.")
+                throw new BadHttpRequestException("Cannot remove yourself if you are team leader.");
             }
             if (removeUser is null || removeUser.TeamId != user.TeamId)
             {
@@ -179,6 +179,25 @@ namespace YuGiOhTeamApp.Services
             _context.Users.FirstOrDefault(u => u.Username == username).TeamId = null;
             _context.SaveChanges();
             return $"Removed {username} from team";
+        }
+        public PagedResult<UserDto> ShowUsers(PageQuery query)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId);
+            if (user.TeamId is null)
+            {
+                throw new BadHttpRequestException("You are not in a team.");
+            }
+            var baseQuery = _context
+                .Users
+                .Where(u => u.TeamId == user.TeamId);
+            var users = baseQuery
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize)
+                .ToList();
+            var totalItemsCount = baseQuery.Count();
+            var userDtos = _mapper.Map<List<UserDto>>(users);
+            var result = new PagedResult<UserDto>(userDtos, totalItemsCount, query.PageSize, query.PageNumber);
+            return result;
         }
     }
 }

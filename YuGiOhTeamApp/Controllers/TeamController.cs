@@ -36,7 +36,7 @@ namespace YuGiOhTeamApp.Controllers
             return BadRequest("You are not team leader.");
         } 
         [HttpPut]
-        [Route("{username}")]
+        [Route("leader/{username}")]
         public ActionResult ChangeTeamLeader([FromRoute] string username)
         {
             _teamService.PassLeader(username);
@@ -65,6 +65,11 @@ namespace YuGiOhTeamApp.Controllers
         public ActionResult DeleteUserFromTeam([FromRoute] string username)
         {
             return Ok(_teamService.DeleteUserFromTeam(username));
+        }
+        [HttpGet]
+        public ActionResult<PagedResult<UserDto>> ShowUsers([FromQuery] PageQuery query)
+        {
+            return Ok(_teamService.ShowUsers(query));
         }
     }
 }
