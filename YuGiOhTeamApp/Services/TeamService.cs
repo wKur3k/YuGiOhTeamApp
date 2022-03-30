@@ -168,6 +168,10 @@ namespace YuGiOhTeamApp.Services
             {
                 throw new BadHttpRequestException("You are not team leader.");
             }
+            if(username == user.Username)
+            {
+                throw new BadHttpRequestException("Cannot remove yourself if you are team leader.")
+            }
             if (removeUser is null || removeUser.TeamId != user.TeamId)
             {
                 throw new BadHttpRequestException("Cannot find user with that username.");
