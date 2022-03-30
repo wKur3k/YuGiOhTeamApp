@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YuGiOhTeamApp.Entities;
 using YuGiOhTeamApp.Models;
 using YuGiOhTeamApp.Services;
 
@@ -46,6 +47,12 @@ namespace YuGiOhTeamApp.Controllers
         public ActionResult RequestToJoin([FromQuery] string teamName)
         {
             return Ok("Sent request to join team: " + _teamService.requestToJoin(teamName));
+        }
+        [HttpGet]
+        [Route("requests")]
+        public ActionResult<IEnumerable<UserRequestDto>> ShowRequests([FromQuery] PageQuery query)
+        {
+            return Ok(_teamService.showRequests(query));
         }
     }
 }

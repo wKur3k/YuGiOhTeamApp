@@ -17,6 +17,8 @@ namespace YuGiOhTeamApp
                 .ForMember(m => m.TeamName, c => c.MapFrom(s => s.Team.Name));
             CreateMap<RegisterUserDto, User>();
             CreateMap<CreateTeamDto, Team>();
+            CreateMap<UserRequests, UserRequestDto>()
+                .ForMember(m => m.Username, c => c.MapFrom(s => s.User.Username));
         }
     }
 }

@@ -51,7 +51,7 @@ namespace YuGiOhTeamApp.Services
         {
             var user = _context.Users.Include(u => u.Team).FirstOrDefault(u => u.Id == _userContextService.GetUserId);
             var newLeader = _context.Users.Include(u => u.Team).FirstOrDefault(u => u.Username == username);
-            if(newLeader.TeamId != user.TeamId)
+            if (newLeader.TeamId != user.TeamId)
             {
                 throw new BadHttpRequestException($"{username} is not in the same team as you.");
             }
@@ -59,7 +59,7 @@ namespace YuGiOhTeamApp.Services
             {
                 throw new BadHttpRequestException("You are not team leader.");
             }
-            if(newLeader is null)
+            if (newLeader is null)
             {
                 throw new BadHttpRequestException($"New Leader username: {username},  is invalid.");
             }
@@ -77,7 +77,7 @@ namespace YuGiOhTeamApp.Services
             }
             user.isLeader = false;
             var team = _context.Teams.Include(t => t.Users).FirstOrDefault(t => t.Id == user.TeamId);
-            if(team is null)
+            if (team is null)
             {
                 throw new BadHttpRequestException("Cannot get team.");
             }
@@ -87,7 +87,7 @@ namespace YuGiOhTeamApp.Services
         public string requestToJoin(string teamName)
         {
             var user = _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId);
-            if(user.TeamId != null)
+            if (user.TeamId != null)
             {
                 throw new BadHttpRequestException("You cannot be in team in order to send requests to join another team.");
             }
@@ -95,7 +95,7 @@ namespace YuGiOhTeamApp.Services
             {
                 throw new BadHttpRequestException("Team name can't be empty.");
             }
-            if(_context.Teams.FirstOrDefault(t => t.Name == teamName) is null)
+            if (_context.Teams.FirstOrDefault(t => t.Name == teamName) is null)
             {
                 throw new BadHttpRequestException("Cannot find team with that name.");
             }
@@ -107,6 +107,20 @@ namespace YuGiOhTeamApp.Services
             _context.UserRequests.Add(request);
             _context.SaveChanges();
             return teamName;
+        }
+        public List<UserRequestDto> showRequests(PageQuery query)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId);
+            if (!user.isLeader)
+            {
+                throw new BadHttpRequestException("You are not team leader.");
+            }
+            var users = _context.UserRequests
+                .Include(u => u.User)
+                .Where(u => u.TeamId == user.TeamId)
+                .ToList();
+            var result = _mapper.Map<List<UserRequestDto>>(users);
+            return result;
         }
     }
 }

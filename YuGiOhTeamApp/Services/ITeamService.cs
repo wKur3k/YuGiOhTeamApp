@@ -1,4 +1,5 @@
-﻿using YuGiOhTeamApp.Models;
+﻿using YuGiOhTeamApp.Entities;
+using YuGiOhTeamApp.Models;
 
 namespace YuGiOhTeamApp.Services
 {
@@ -9,5 +10,6 @@ namespace YuGiOhTeamApp.Services
         void passLeader(string username);
         void deleteTeam();
         string requestToJoin(string teamName);
+        List<UserRequestDto> showRequests(PageQuery query);
     }
 }
