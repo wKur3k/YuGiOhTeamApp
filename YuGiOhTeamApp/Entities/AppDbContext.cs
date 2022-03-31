@@ -14,6 +14,7 @@ namespace YuGiOhTeamApp.Entities
         public DbSet<Role> Roles { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<UserRequests> UserRequests { get; set; }
+        public DbSet<Decklist> Decklists { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
