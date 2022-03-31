@@ -27,5 +27,12 @@ namespace YuGiOhTeamApp.Controllers
             _decklistService.CreateDecklist(file);
             return Ok();
         }
+        [HttpPatch]
+        [Route("{teamId}")]
+        public ActionResult EditDecklist([FromRoute] int teamId,[FromBody]EditDecklistDto dto)
+        {
+            _decklistService.EditDecklist(teamId, dto);
+            return Ok();
+        }
     }
 }

@@ -54,5 +54,23 @@ namespace YuGiOhTeamApp.Services
             _context.Decklists.Add(newDecklist);
             _context.SaveChanges();
         }
+        public void EditDecklist(int id, EditDecklistDto dto)
+        {
+            var decklist = _context.Decklists.FirstOrDefault(d => d.Id == id);
+            if(decklist.UserId != _userContextService.GetUserId)
+            {
+                throw new BadHttpRequestException("Wrong decklist id.");
+            }
+            if (String.IsNullOrEmpty(dto.Name))
+            {
+                decklist.Visibility = dto.Visibility;
+            }
+            else
+            {
+                decklist.Visibility = dto.Visibility;
+                decklist.Name = dto.Name;
+            }
+            _context.SaveChanges();
+        }
     }
 }
