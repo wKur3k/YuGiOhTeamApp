@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YuGiOhTeamApp.Models;
 using YuGiOhTeamApp.Services;
 
 namespace YuGiOhTeamApp.Controllers
@@ -20,10 +21,11 @@ namespace YuGiOhTeamApp.Controllers
         }
 
         [HttpPost]
-        [Route("/upload")]
-        public ActionResult UploadDecklist([FromForm]IFormFile file)
+        [Route("create")]
+        public ActionResult CreateDecklist([FromForm]IFormFile file)
         {
-            return Ok(_decklistService.UploadDecklist(file));
+            _decklistService.CreateDecklist(file);
+            return Ok();
         }
     }
 }

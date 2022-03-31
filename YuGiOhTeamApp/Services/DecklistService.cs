@@ -1,18 +1,25 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YuGiOhTeamApp.Entities;
+using YuGiOhTeamApp.Models;
 
 namespace YuGiOhTeamApp.Services
 {
     public class DecklistService : IDecklistService
     {
         private readonly IUserContextService _userContextService;
+        private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public DecklistService(IUserContextService userContextService)
+        public DecklistService(IUserContextService userContextService, AppDbContext context, IMapper mapper)
         {
             _userContextService = userContextService;
+            _context = context;
+            _mapper = mapper;
         }
         public string UploadDecklist(IFormFile file)
         {
@@ -31,9 +38,21 @@ namespace YuGiOhTeamApp.Services
                 {
                     file.CopyTo(stream);
                 }
-                return "Decklist Uploaded";
+                return fullPath;
             }
             throw new BadHttpRequestException("Something went wrong");
+        }
+        public void CreateDecklist(IFormFile file)
+        {
+            var newDecklist = new Decklist()
+            {
+                Path = UploadDecklist(file),
+                UserId = (Guid)_userContextService.GetUserId,
+                Name = file.FileName,
+                Visibility = Visibility.PRIVATE
+            };
+            _context.Decklists.Add(newDecklist);
+            _context.SaveChanges();
         }
     }
 }
