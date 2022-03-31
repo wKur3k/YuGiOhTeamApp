@@ -20,6 +20,7 @@ namespace YuGiOhTeamApp.Controllers
         }
 
         [HttpPost]
+        [Route("/upload")]
         public ActionResult UploadDecklist([FromForm]IFormFile file)
         {
             return Ok(_decklistService.UploadDecklist(file));
