@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using YuGiOhTeamApp.Entities;
 using YuGiOhTeamApp.Models;
@@ -11,6 +13,8 @@ namespace YuGiOhTeamApp.Services
 {
     public class DecklistService : IDecklistService
     {
+        private readonly Dictionary<int, string> _cardBase = JsonSerializer.Deserialize<Dictionary<int, string>>(
+            File.ReadAllText(@"C:\Users\Wojciech\Downloads\cards.json"));
         private readonly IUserContextService _userContextService;
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
@@ -71,6 +75,28 @@ namespace YuGiOhTeamApp.Services
                 decklist.Name = dto.Name;
             }
             _context.SaveChanges();
+        }
+        public Tuple<byte[], string> DownloadDecklist(int id)
+        {
+            var decklist = _context.Decklists.FirstOrDefault(d => d.Id ==id);
+            if(decklist is null)
+            {
+                throw new BadHttpRequestException("Cannot find this decklist.");
+            }
+            if((decklist.Visibility == Visibility.PRIVATE && decklist.UserId != _userContextService.GetUserId) || 
+               (decklist.Visibility == Visibility.TEAM && decklist.User.TeamId != _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId).TeamId))
+            {
+                throw new BadHttpRequestException("You don't have access to download this decklist");
+            }
+            byte[] fileBytes = System.IO.File.ReadAllBytes(decklist.Path);
+            return Tuple.Create(fileBytes, decklist.Name);
+        }
+        public string CreateTranslatedFile(string path)
+        {
+            var source = File.ReadAllText(path);
+            List<string> sourceList = source.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            List<string> translation = sourceList.Select(x => _cardBase.ContainsKey(x) ? _cardBase[x] : x).toList();
+            return "x";
         }
     }
 }

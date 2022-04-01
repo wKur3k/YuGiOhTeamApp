@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,15 @@ namespace YuGiOhTeamApp.Controllers
         {
             _decklistService.EditDecklist(teamId, dto);
             return Ok();
+        }
+        [HttpGet]
+        [Route("{decklistId}")]
+        public ActionResult Download([FromRoute]int decklistId)
+        {
+            var contentDisposition = new ContentDispositionHeaderValue("attachment");
+            contentDisposition.SetHttpFileName(_decklistService.DownloadDecklist(decklistId).Item2);
+            Response.Headers[HeaderNames.ContentDisposition] = contentDisposition.ToString();
+            return File(_decklistService.DownloadDecklist(decklistId).Item1, "text/plain");
         }
     }
 }
