@@ -8,6 +8,7 @@ namespace YuGiOhTeamApp.Services
         void CreateDecklist(IFormFile file);
         Tuple<byte[], string> DownloadDecklist(int id);
         void EditDecklist(int id, EditDecklistDto dto);
+        string TranslateFile(string path);
         string UploadDecklist(IFormFile file);
     }
 }

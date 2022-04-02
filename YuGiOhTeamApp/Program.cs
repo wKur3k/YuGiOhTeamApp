@@ -50,6 +50,14 @@ builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendClient", policyBuilder =>
+        policyBuilder.AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithOrigins(builder.Configuration["AllowedOrigins"])
+    );
+});
 
 var app = builder.Build();
 
@@ -64,6 +72,8 @@ if (app.Environment.IsDevelopment())
 }
 
 seeder.Seed();
+
+app.UseCors("FrontendClient");
 
 app.UseHttpsRedirection();
 

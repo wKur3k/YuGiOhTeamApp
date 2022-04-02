@@ -55,6 +55,7 @@ namespace YuGiOhTeamApp.Services
                 Name = file.FileName,
                 Visibility = Visibility.PRIVATE
             };
+            newDecklist.TranslatedList = TranslateFile(newDecklist.Path);
             _context.Decklists.Add(newDecklist);
             _context.SaveChanges();
         }
@@ -91,12 +92,33 @@ namespace YuGiOhTeamApp.Services
             byte[] fileBytes = System.IO.File.ReadAllBytes(decklist.Path);
             return Tuple.Create(fileBytes, decklist.Name);
         }
-        public string CreateTranslatedFile(string path)
+        public string TranslateFile(string path)
         {
-            var source = File.ReadAllText(path);
-            List<string> sourceList = source.Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            List<string> translation = sourceList.Select(x => _cardBase.ContainsKey(x) ? _cardBase[x] : x).toList();
-            return "x";
+            var x = File.ReadAllText(path);
+            x = x.Substring(x.IndexOf(Environment.NewLine) + 1);
+            string[] lista = x.Split(new string[] { "#main", "#extra", "!side" }, StringSplitOptions.None);
+            string result = String.Empty;
+            for (int i = 1; i < 4; i++)
+            {
+                List<int> main = lista[i].Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries).Select(Int32.Parse).ToList();
+                List<string> cards = main.Select(x => _cardBase.ContainsKey(x) ? _cardBase[x] : "Unknown card").ToList();
+                switch (i)
+                {
+                    case 1:
+                        result += "MAIN\n\n";
+                        break;
+                    case 2:
+                        result += "\n\nSIDE\n\n";
+                        break;
+                    case 3:
+                        result += "\n\nEXTRA\n\n";
+                        break;
+                    default:
+                        break;
+                }
+                result += String.Join("\n", cards);
+            }
+            return result;
         }
     }
 }
