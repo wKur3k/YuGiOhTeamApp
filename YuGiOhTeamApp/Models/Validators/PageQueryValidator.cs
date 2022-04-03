@@ -11,7 +11,7 @@ namespace YuGiOhTeamApp.Models.Validators
     public class PageQueryValidator : AbstractValidator<PageQuery>
     {
         private readonly int[] allowedPageSizes = new[] { 10, 20 };
-        private readonly string[] allowedSortByColumnNames = { nameof(User.Username), nameof(User.Team.Name) };
+        private readonly string[] allowedSortByColumnNames = { nameof(User.Username), nameof(User.Team.Name), nameof(Decklist.Name), nameof(Decklist.User.Username) };
 
         public PageQueryValidator()
         {

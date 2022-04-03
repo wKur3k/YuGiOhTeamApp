@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -119,6 +121,64 @@ namespace YuGiOhTeamApp.Services
                 result += String.Join("\n", cards);
             }
             return result;
+        }
+        public PagedResult<DecklistDto> getAll(PageQuery query, Visibility visibility)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId);
+            var baseQuery = _context
+                .Decklists
+                .Include(d => d.User)
+                .Where(d => query.SearchPhrase == null ||
+                (d.User.Username.ToLower().Contains(query.SearchPhrase.ToLower()) ||
+                d.Name.ToLower().Contains(query.SearchPhrase.ToLower())));
+            switch (visibility)
+            {
+                case Visibility.PUBLIC:
+                    baseQuery = baseQuery.Where(d => d.Visibility == Visibility.PUBLIC);
+                    break;
+                case Visibility.TEAM:
+                    baseQuery.Where(d => d.Visibility == Visibility.TEAM && d.User.TeamId == user.TeamId);
+                    break;
+                case Visibility.PRIVATE:
+                    baseQuery = baseQuery.Where(d => d.Visibility == Visibility.PRIVATE && d.UserId == user.Id);
+                    break;
+                default:
+                    break;
+            }
+            if (!string.IsNullOrEmpty(query.SortBy))
+            {
+                var columnsSelectors = new Dictionary<string, Expression<Func<Decklist, object>>>
+                {
+                    {nameof(Decklist.Name), r => r.Name },
+                    {nameof(Decklist.User.Username), r => r.User.Username }
+                };
+                var selectedColumns = columnsSelectors[query.SortBy];
+                baseQuery = query.SortDirection == SortDirection.ASC ? baseQuery.OrderBy(selectedColumns) : baseQuery.OrderByDescending(selectedColumns);
+            }
+            var decklists = baseQuery
+                .Skip(query.PageSize * (query.PageNumber - 1))
+                .Take(query.PageSize)
+                .ToList();
+            var totalItemsCount = baseQuery.Count();
+            var decklistDtos = _mapper.Map<List<DecklistDto>>(decklists);
+            var result = new PagedResult<DecklistDto>(decklistDtos, totalItemsCount, query.PageSize, query.PageNumber);
+            return result;
+        }
+        public string GetDecklistDetails(int id)
+        {
+            var decklist = _context
+                .Decklists
+                .FirstOrDefault(d => d.Id == id);
+            if (decklist is null)
+            {
+                throw new BadHttpRequestException("Cannot find this decklist.");
+            }
+            if ((decklist.Visibility == Visibility.PRIVATE && decklist.UserId != _userContextService.GetUserId) ||
+               (decklist.Visibility == Visibility.TEAM && decklist.User.TeamId != _context.Users.FirstOrDefault(u => u.Id == _userContextService.GetUserId).TeamId))
+            {
+                throw new BadHttpRequestException("You don't have access to see this decklist");
+            }
+            return decklist.TranslatedList;
         }
     }
 }

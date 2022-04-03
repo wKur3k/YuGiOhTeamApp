@@ -29,20 +29,32 @@ namespace YuGiOhTeamApp.Controllers
             return Ok();
         }
         [HttpPatch]
-        [Route("{teamId}")]
-        public ActionResult EditDecklist([FromRoute] int teamId,[FromBody]EditDecklistDto dto)
+        [Route("{decklistId}")]
+        public ActionResult EditDecklist([FromRoute] int decklistId,[FromBody]EditDecklistDto dto)
         {
-            _decklistService.EditDecklist(teamId, dto);
+            _decklistService.EditDecklist(decklistId, dto);
             return Ok();
         }
         [HttpGet]
-        [Route("{decklistId}")]
+        [Route("download/{decklistId}")]
         public ActionResult Download([FromRoute]int decklistId)
         {
             var contentDisposition = new ContentDispositionHeaderValue("attachment");
             contentDisposition.SetHttpFileName(_decklistService.DownloadDecklist(decklistId).Item2);
             Response.Headers[HeaderNames.ContentDisposition] = contentDisposition.ToString();
             return File(_decklistService.DownloadDecklist(decklistId).Item1, "text/plain");
+        }
+        [HttpGet]
+        [Route("{visibility}")]
+        public ActionResult<PagedResult<DecklistDto>> GetAll([FromQuery]PageQuery query, [FromRoute]Visibility visibility)
+        {
+            return _decklistService.getAll(query, visibility);
+        }
+        [HttpGet]
+        [Route("details/{decklistId}")]
+        public ActionResult getDetails([FromRoute]int decklistId)
+        {
+            return Ok(_decklistService.GetDecklistDetails(decklistId));
         }
     }
 }
