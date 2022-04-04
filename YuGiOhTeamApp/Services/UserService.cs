@@ -45,12 +45,12 @@ namespace YuGiOhTeamApp.Services
                 .FirstOrDefault(u => u.Username == dto.Username);
             if(user is null)
             {
-                throw new BadHttpRequestException("Invalid Username or Password");
+                return("Invalid Username or Password");
             }
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
             if(result == PasswordVerificationResult.Failed)
             {
-                throw new BadHttpRequestException("Invalid Username or Password");
+                return("Invalid Username or Password");
             }
             var claims = new List<Claim>()
             {
