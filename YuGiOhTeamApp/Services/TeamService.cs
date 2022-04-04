@@ -82,6 +82,8 @@ namespace YuGiOhTeamApp.Services
                 throw new BadHttpRequestException("Cannot get team.");
             }
             _context.Teams.Remove(team);
+            var decklists = _context.Decklists.Where(d => d.Visibility == Visibility.TEAM && d.User.TeamId == team.Id).ToList()
+                .Select(d => { d.Visibility = Visibility.PRIVATE; return d; });
             _context.SaveChanges();
         }
         public string RequestToJoin(string teamName)

@@ -10,7 +10,7 @@ using YuGiOhTeamApp.Services;
 
 namespace YuGiOhTeamApp.Controllers
 {
-    [Route("api/decklist")]
+    [Route("api/decklists")]
     [ApiController]
     public class DecklistController : ControllerBase
     {
@@ -22,7 +22,6 @@ namespace YuGiOhTeamApp.Controllers
         }
 
         [HttpPost]
-        [Route("create")]
         public ActionResult CreateDecklist([FromForm]IFormFile file)
         {
             _decklistService.CreateDecklist(file);

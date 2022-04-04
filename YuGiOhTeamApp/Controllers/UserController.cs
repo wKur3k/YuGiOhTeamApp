@@ -9,7 +9,7 @@ using YuGiOhTeamApp.Services;
 
 namespace YuGiOhTeamApp.Controllers
 {
-    [Route("api/user")]
+    [Route("api/users")]
     [ApiController]
     public class UserController : ControllerBase
     {

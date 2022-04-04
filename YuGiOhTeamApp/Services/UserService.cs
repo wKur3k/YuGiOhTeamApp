@@ -112,6 +112,5 @@ namespace YuGiOhTeamApp.Services
             }
             return _mapper.Map<UserDto>(user);
         }
-
     }
 }
