@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace YuGiOhTeamApp.Controllers
 {
     [Route("api/teams")]
     [ApiController]
+    [Authorize(Roles = "User")]
     public class TeamController : ControllerBase
     {
         private readonly ITeamService _teamService;

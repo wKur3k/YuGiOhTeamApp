@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ namespace YuGiOhTeamApp.Controllers
 {
     [Route("api/users")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -22,6 +24,7 @@ namespace YuGiOhTeamApp.Controllers
 
         [HttpPost]
         [Route("register")]
+        [AllowAnonymous]
         public ActionResult RegisterUser([FromBody] RegisterUserDto dto)
         {
             _userService.RegisterUser(dto);
@@ -30,6 +33,7 @@ namespace YuGiOhTeamApp.Controllers
 
         [HttpPost]
         [Route("login")]
+        [AllowAnonymous]
         public ActionResult Login([FromBody] LoginUserDto dto)
         {
             return Ok(_userService.GenerateJwtToken(dto));

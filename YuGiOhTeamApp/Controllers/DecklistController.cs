@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace YuGiOhTeamApp.Controllers
 {
     [Route("api/decklists")]
     [ApiController]
+    [Authorize(Roles = "User")]
     public class DecklistController : ControllerBase
     {
         private readonly IDecklistService _decklistService;
