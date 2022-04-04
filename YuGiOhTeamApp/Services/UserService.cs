@@ -73,44 +73,5 @@ namespace YuGiOhTeamApp.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);
         }
-        public PagedResult<UserDto> GetUsers(PageQuery query)
-        {
-            var baseQuery = _context
-                .Users
-                .Include(u => u.Team)
-                .Where(u => query.SearchPhrase == null ||
-                (u.Username.ToLower().Contains(query.SearchPhrase.ToLower()) ||
-                u.Team.Name.ToLower().Contains(query.SearchPhrase.ToLower())));
-            if (!string.IsNullOrEmpty(query.SortBy))
-            {
-                var columnsSelectors = new Dictionary<string, Expression<Func<User, object>>>
-                {
-                    { nameof(User.Username), r => r.Username },
-                    { nameof(User.Team.Name), r => r.Team.Name }
-                };
-                var selectedColumns = columnsSelectors[query.SortBy];
-                baseQuery = query.SortDirection == SortDirection.ASC ? baseQuery.OrderBy(selectedColumns) : baseQuery.OrderByDescending(selectedColumns);
-            }
-            var users = baseQuery
-                .Skip(query.PageSize * (query.PageNumber - 1))
-                .Take(query.PageSize)
-                .ToList();
-            var totalItemsCount = baseQuery.Count();
-            var userDtos = _mapper.Map<List<UserDto>>(users);
-            var result = new PagedResult<UserDto>(userDtos, totalItemsCount, query.PageSize, query.PageNumber);
-            return result;
-        }
-        public UserDto GetUserById(Guid id)
-        {
-            var user = _context
-                .Users
-                .Include(u => u.Team)
-                .FirstOrDefault(u => u.Id == id);
-            if (user is null)
-            {
-                return null;
-            }
-            return _mapper.Map<UserDto>(user);
-        }
     }
 }

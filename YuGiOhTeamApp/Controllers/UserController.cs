@@ -34,18 +34,5 @@ namespace YuGiOhTeamApp.Controllers
         {
             return Ok(_userService.GenerateJwtToken(dto));
         }
-
-        [HttpGet]
-        public ActionResult<IEnumerable<UserDto>> GetUsers([FromQuery] PageQuery query)
-        {
-            return Ok(_userService.GetUsers(query));
-        }
-
-        [HttpGet]
-        [Route("{id}")]
-        public ActionResult<UserDto> GetUserById([FromRoute] Guid id)
-        {
-            return Ok(_userService.GetUserById(id));
-        }
     }
 }
